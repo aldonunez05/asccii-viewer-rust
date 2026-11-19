@@ -106,3 +106,43 @@ fn triangularize_recurse(vecs: &[Vec3], idx: &mut Vec<usize>, orient: bool, out_
 		}
 	}
 } 
+
+fn triangularize(const vecs: &[Vecs3]) -> Vec<usize>){
+	let n = vecs.len();
+	assert!(n >= 3);
+
+	//find the plane that contains all vectors (given by <dir1, dir2>)
+	let mut best_normal_mag = 0.0f32;
+	let mut dir1 = Vec3::ZERO;
+	let mut dir2 = VEC3::ZERO;
+
+	for i in 0..n{
+		let v1 = vecs[i];
+		let v2 = vecs[(i + 1) % n];
+		let v3 = vecs[(i + 2) % n];
+
+		let d1 = v1 - v2;
+		let d2 = v3 - v2;
+		let normal = d1.cross(d2);
+		let mag = normal.length();
+
+		if best_normal_mag <= mag{
+			best_normal_mag = mag;
+			dir1 = d1.normalize();
+			dir2 = normal.normalize().cross(d1);
+		}
+	}
+	let mut area = 0.0f32;
+	for i in 0..n{
+		let v1 = vecs_plane[i];
+		let v2 = vecs_plane[(i + 1) % n];
+		area += (v2.x - v1.x) * (v2.y + v1.y);
+	}
+	let orientation = area >= 0.0;
+
+	let idxs: Vec<usize> = (0..n).collect();
+
+	let mut out_idxs = vec![0usize; 3 * (n - 2)];
+	triangularize_recurse(vecs_plane, idxs, orientation, &mut out_idxs);
+	out_idxs
+} 
