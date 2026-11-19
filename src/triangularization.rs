@@ -154,35 +154,29 @@ pub fn triangularize(vecs: &[Vec3]) -> Vec<usize>{
 
 
 #[cfg(test)]
-mod tests {
+mod tests{
     use super::*;
-
-    fn check(pts: &[Vec3], expected_area: f32) {
+    
+    fn check(pts: &[Vec3], expected_area: f32){
         let tris = triangularize(pts);
         assert_eq!(tris.len(), 3 * (pts.len() - 2));
         let area: f32 = tris
             .chunks(3)
             .map(|t| (pts[t[1]] - pts[t[0]]).cross(pts[t[2]] - pts[t[0]]).length() / 2.0)
-            .sum();
-        assert!((area - expected_area).abs() < 1e-3, "area {area} != {expected_area}, tris {tris:?}");
+            .sum()
+        assert!((area - expected_area).abs() < 1e-3, "area {area} != {expected area}, tris {tris:?}");
     }
 
     const L: [(f32, f32); 6] = [(0., 0.), (2., 0.), (2., 1.), (1., 1.), (1., 2.), (0., 2.)];
 
-    #[test]
-    fn l_shape() {
-        check(&L.map(|(x, y)| Vec3::new(x, y, 0.0)), 3.0);
-    }
-
-    #[test]
-    fn l_shape_reversed() {
-        let mut p = L.map(|(x, y)| Vec3::new(x, y, 0.0));
+    fn l_shape(){
+        check(&L.map(|(x, y)| Vec3::new(x, y, 0.0));
         p.reverse();
         check(&p, 3.0);
     }
 
     #[test]
-    fn l_shape_in_xz_plane() {
+    fn l_shape_in_xz_plane(){
         check(&L.map(|(x, z)| Vec3::new(x, 5.0, z)), 3.0);
     }
 }
